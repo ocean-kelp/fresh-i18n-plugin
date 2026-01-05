@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "imports": {
     "fresh": "jsr:@fresh/core@^2.0.0",
-    "@yourorg/fresh-i18n": "jsr:@yourorg/fresh-i18n@^1.0.0"
+    "@xingshuu-denofresh/fresh-i18n-plugin": "../../mod.ts"
   },
   "tasks": {
     "dev": "deno run -A main.ts"

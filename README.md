@@ -59,13 +59,29 @@ locales/
 }
 ```
 
-### 2. Configure the plugin in `main.ts`
+### 2. Define your state type in `utils.ts`
+
+Extend the `TranslationState` interface to include translation functionality in your app state:
+
+```typescript
+import { createDefine } from "fresh";
+import type { TranslationState } from "@xingshuu-denofresh/fresh-i18n-plugin";
+
+export interface State extends TranslationState {
+  // Add your custom state properties here
+}
+
+export const define = createDefine<State>();
+```
+
+### 3. Configure the plugin in `main.ts`
 
 ```typescript
 import { App } from "fresh";
 import { i18nPlugin } from "@xingshuu-denofresh/fresh-i18n-plugin";
+import { type State } from "./utils.ts";
 
-export const app = new App();
+export const app = new App<State>();
 
 app.use(i18nPlugin({
   languages: ["en", "es"],
@@ -76,15 +92,11 @@ app.use(i18nPlugin({
 await app.listen();
 ```
 
-### 3. Use translations in your routes
+### 4. Use translations in your routes
 
 ```typescript
 import { PageProps } from "fresh";
-
-interface State {
-  t: (key: string) => string;
-  locale: string;
-}
+import type { State } from "../utils.ts";
 
 export default function HomePage({ state }: PageProps<unknown, State>) {
   return (

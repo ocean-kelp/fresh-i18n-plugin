@@ -25,6 +25,7 @@ Then visit:
 ```
 basic/
 ├── main.ts           # App setup with i18n plugin
+├── utils.ts          # State type definition
 ├── deno.json         # Project configuration
 ├── locales/
 │   ├── en/
