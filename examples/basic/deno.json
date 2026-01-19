@@ -1,9 +1,17 @@
 {
   "name": "fresh-i18n-basic-example",
   "version": "1.0.0",
+  "exports": "./main.ts",
   "imports": {
     "fresh": "jsr:@fresh/core@^2.0.0",
-    "@xiayun/fresh-i18n": "../../mod.ts"
+    "@xiayun/fresh-i18n": "../../mod.ts",
+    "@std/path": "jsr:@std/path@^1.0.0",
+    "preact": "npm:preact@^10.24.3",
+    "preact/": "npm:/preact@^10.24.3/"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
   },
   "tasks": {
     "dev": "deno run -A main.ts"

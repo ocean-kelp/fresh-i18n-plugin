@@ -1,0 +1,8 @@
+{
+  "title": "Panel de Control",
+  "welcomeMessage": "Bienvenido a tu panel de control",
+  "stats": {
+    "users": "Usuarios Totales",
+    "revenue": "Ingresos"
+  }
+}

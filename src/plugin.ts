@@ -1,4 +1,4 @@
-import { join } from "@std/path";
+import { join, relative } from "@std/path";
 import { type Middleware } from "fresh";
 import { translate } from "./translator.ts";
 import type { TranslationState } from "./types.ts";
@@ -107,6 +107,74 @@ async function readJsonFile(filePath: string): Promise<Record<string, string>> {
   } catch {
     return {}; // Silently fail for missing files
   }
+}
+
+/**
+ * Converts kebab-case or snake_case strings to camelCase.
+ * @param str - The string to convert
+ * @returns The camelCased string
+ * @example
+ * kebabToCamel("pdi-modals") // "pdiModals"
+ * kebabToCamel("user_settings") // "userSettings"
+ */
+function kebabToCamel(str: string): string {
+  return str.replace(/[-_]([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+
+/**
+ * Recursively discovers all JSON translation files in a locale directory.
+ * Builds namespace keys from folder/file paths.
+ * 
+ * @param localeDir - The locale directory to scan (e.g., "locales/en")
+ * @param basePath - The base path for relative path calculation (used internally for recursion)
+ * @returns Map of namespace -> file path
+ * @example
+ * // Directory structure:
+ * // locales/en/common.json
+ * // locales/en/common/actions.json
+ * // locales/en/features/navigator/dashboard.json
+ * 
+ * // Returns:
+ * // {
+ * //   "common": "locales/en/common.json",
+ * //   "common.actions": "locales/en/common/actions.json",
+ * //   "features.navigator.dashboard": "locales/en/features/navigator/dashboard.json"
+ * // }
+ */
+async function discoverTranslationFiles(
+  localeDir: string,
+  basePath: string = localeDir,
+): Promise<Map<string, string>> {
+  const files = new Map<string, string>();
+
+  try {
+    for await (const entry of Deno.readDir(localeDir)) {
+      const fullPath = join(localeDir, entry.name);
+
+      if (entry.isFile && entry.name.endsWith(".json")) {
+        // Build namespace from relative path
+        const relativePath = relative(basePath, fullPath);
+        // Remove .json extension and convert path separators to dots
+        const namespace = relativePath
+          .replace(/\.json$/, "")
+          .split("/")
+          .map(kebabToCamel)
+          .join(".");
+
+        files.set(namespace, fullPath);
+      } else if (entry.isDirectory) {
+        // Recursively scan subdirectories
+        const subFiles = await discoverTranslationFiles(fullPath, basePath);
+        for (const [namespace, path] of subFiles) {
+          files.set(namespace, path);
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`Error discovering translation files in ${localeDir}:`, error);
+  }
+
+  return files;
 }
 
 function getPreferredLanguage(
@@ -238,14 +306,12 @@ export const i18nPlugin = <State extends TranslationState = TranslationState>(
 
     const loadTranslation = async (
       namespace: string,
+      filePath: string,
       targetData: Record<string, unknown>,
-      locale: string,
       fallbackKeysSet: Set<string>,
       isDefaultLanguage: boolean,
       trackFallbacks: boolean,
     ) => {
-      const filePath = join(localesDir, locale, `${namespace}.json`);
-
       const data = await readJsonFile(filePath);
       if (Object.keys(data).length > 0) {
         const flattenedData = flattenObject(data);
@@ -271,23 +337,23 @@ export const i18nPlugin = <State extends TranslationState = TranslationState>(
       }
     };
 
-    const namespaces = [
-      "common",
-      "error",
-      "metadata",
-      ...pathSegments.slice(1),
-    ];
-
     // Track which keys are using fallback (for indicator)
     const fallbackKeys = new Set<string>();
 
+    // Discover all translation files in the current locale directory
+    const currentLocaleDir = join(localesDir, lang || defaultLanguage);
+    const translationFiles = await discoverTranslationFiles(currentLocaleDir);
+
     // If fallback enabled and not default language, load default language first as base
     if (fallbackConfig.enabled && lang !== defaultLanguage) {
-      for (const namespace of namespaces) {
+      const defaultLocaleDir = join(localesDir, defaultLanguage);
+      const defaultTranslationFiles = await discoverTranslationFiles(defaultLocaleDir);
+
+      for (const [namespace, filePath] of defaultTranslationFiles) {
         await loadTranslation(
           namespace,
+          filePath,
           translationData,
-          defaultLanguage,
           fallbackKeys,
           true,
           true,
@@ -296,11 +362,11 @@ export const i18nPlugin = <State extends TranslationState = TranslationState>(
     }
 
     // Load current language translations (overwrites defaults if any)
-    for (const namespace of namespaces) {
+    for (const [namespace, filePath] of translationFiles) {
       await loadTranslation(
         namespace,
+        filePath,
         translationData,
-        lang || defaultLanguage,
         fallbackKeys,
         false,
         fallbackConfig.enabled ?? false,

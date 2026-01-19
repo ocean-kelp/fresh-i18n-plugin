@@ -1,0 +1,8 @@
+{
+  "title": "Dashboard",
+  "welcomeMessage": "Welcome to your dashboard",
+  "stats": {
+    "users": "Total Users",
+    "revenue": "Revenue"
+  }
+}

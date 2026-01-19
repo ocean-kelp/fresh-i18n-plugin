@@ -95,10 +95,6 @@ export function translate(
     // Key not found - show warnings in development
     if (!useProductionBehavior) {
       console.warn(`❌ Missing translation key: "${key}"${localeInfo}`);
-      console.warn(
-        `   Available keys (first 3):`,
-        Object.keys(translationData).slice(0, 3),
-      );
     }
 
     // Production behavior: show key if showKeysInProd is enabled, otherwise empty string

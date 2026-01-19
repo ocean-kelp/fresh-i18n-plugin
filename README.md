@@ -7,6 +7,7 @@ New name: @xiayun/fresh-i18n
 
 ## Features
 
+- **Nested folder structure** - Organize translations with unlimited nesting (NEW!)
 - Automatic locale detection from URL paths and Accept-Language headers
 - Fallback system with configurable indicators for missing translations
 - Development validation with detailed error messages and warnings
@@ -15,6 +16,7 @@ New name: @xiayun/fresh-i18n
 - TypeScript native with full type safety
 - Smart locale discovery - automatically finds your locales directory
 - Flexible configuration - customize every aspect of translation behavior
+- **Kebab-case to camelCase** - File names auto-converted for clean code (NEW!)
 
 ## Installation
 
@@ -36,7 +38,9 @@ Or add to your `deno.json`:
 
 ### 1. Create locale files
 
-Organize your translations in a `locales` directory:
+Organize your translations in a `locales` directory. You can use a flat structure or nest folders as deeply as needed:
+
+**Flat structure (backwards compatible):**
 
 ```
 locales/
@@ -50,15 +54,33 @@ locales/
     └── metadata.json
 ```
 
-**Example `locales/en/common.json`:**
+**Nested structure (recommended for larger apps):**
+
+```
+locales/
+├── en/
+│   ├── common/
+│   │   ├── actions.json     → common.actions.*
+│   │   ├── states.json      → common.states.*
+│   │   └── labels.json      → common.labels.*
+│   └── features/
+│       ├── dashboard.json   → features.dashboard.*
+│       └── users/
+│           ├── list.json    → features.users.list.*
+│           └── form.json    → features.users.form.*
+└── es/
+    └── ... (same structure)
+```
+
+**See [Nested Structure Guide](./docs/NESTED_STRUCTURE.md) for detailed documentation.**
+
+**Example `locales/en/common.json` or `locales/en/common/actions.json`:**
 
 ```json
 {
-  "welcome": "Welcome to Fresh",
-  "nav": {
-    "home": "Home",
-    "about": "About"
-  }
+  "save": "Save",
+  "cancel": "Cancel",
+  "edit": "Edit"
 }
 ```
 
