@@ -6,7 +6,7 @@ import type { TranslationConfig } from "./translator.ts";
  *
  * @example
  * ```typescript
- * import { TranslationState } from "@xingshuu-denofresh/fresh-i18n-plugin";
+ * import { TranslationState } from "@xiayun/fresh-i18n";
  *
  * export interface State extends TranslationState {
  *   // Your custom state properties

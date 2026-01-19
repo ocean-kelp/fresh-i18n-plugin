@@ -2,6 +2,9 @@
 
 A simple internationalization (i18n) plugin for [Fresh](https://fresh.deno.dev) with automatic locale detection and fallback support.
 
+Previous name: @xingshuu-denofresh/fresh-i18n-plugin
+New name: @xiayun/fresh-i18n
+
 ## Features
 
 - Automatic locale detection from URL paths and Accept-Language headers
@@ -16,7 +19,7 @@ A simple internationalization (i18n) plugin for [Fresh](https://fresh.deno.dev) 
 ## Installation
 
 ```bash
-deno add @xingshuu-denofresh/fresh-i18n-plugin
+deno add @xiayun/fresh-i18n
 ```
 
 Or add to your `deno.json`:
@@ -24,7 +27,7 @@ Or add to your `deno.json`:
 ```json
 {
   "imports": {
-    "@xingshuu-denofresh/fresh-i18n-plugin": "jsr:@xingshuu-denofresh/fresh-i18n-plugin@^1.0.0"
+    "@xiayun/fresh-i18n": "jsr:@xiayun/fresh-i18n@^1.0.0"
   }
 }
 ```
@@ -65,7 +68,7 @@ Extend the `TranslationState` interface to include translation functionality in 
 
 ```typescript
 import { createDefine } from "fresh";
-import type { TranslationState } from "@xingshuu-denofresh/fresh-i18n-plugin";
+import type { TranslationState } from "@xiayun/fresh-i18n";
 
 export interface State extends TranslationState {
   // Add your custom state properties here
@@ -78,7 +81,7 @@ export const define = createDefine<State>();
 
 ```typescript
 import { App } from "fresh";
-import { i18nPlugin } from "@xingshuu-denofresh/fresh-i18n-plugin";
+import { i18nPlugin } from "@xiayun/fresh-i18n";
 import { type State } from "./utils.ts";
 
 export const app = new App<State>();
@@ -223,7 +226,7 @@ export default function MyRoute({ data, state }: PageProps<RouteData, State>) {
 ### 3. Use in island:
 
 ```typescript
-import { translate, TranslationConfig } from "@xingshuu-denofresh/fresh-i18n-plugin";
+import { translate, TranslationConfig } from "@xiayun/fresh-i18n";
 
 interface MyIslandProps {
   translationData: Record<string, unknown>;

@@ -147,7 +147,7 @@ function getPreferredLanguage(
  * @example
  * ```typescript
  * import { App } from "fresh";
- * import { i18nPlugin } from "@xingshuu-denofresh/fresh-i18n-plugin";
+ * import { i18nPlugin } from "@xiayun/fresh-i18n";
  *
  * const app = new App();
  * app.use(i18nPlugin({

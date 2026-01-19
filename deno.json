@@ -1,6 +1,6 @@
 {
-  "name": "@xingshuu-denofresh/fresh-i18n-plugin",
-  "version": "0.1.3",
+  "name": "@xiayun/fresh-i18n",
+  "version": "0.1.4",
   "license": "MIT",
   "exports": "./mod.ts",
   "tasks": {

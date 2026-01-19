@@ -1,5 +1,5 @@
 import { App } from "fresh";
-import { i18nPlugin } from "@xingshuu-denofresh/fresh-i18n-plugin";
+import { i18nPlugin } from "@xiayun/fresh-i18n";
 import { type State } from "./utils.ts";
 
 export const app = new App<State>();
