@@ -106,3 +106,42 @@ export function translate(
     return useProductionBehavior ? "" : `[${key}]`;
   };
 }
+
+/**
+ * Creates a namespaced translator that automatically prefixes all keys with a given namespace.
+ * This eliminates the need to repeat namespace prefixes throughout your code.
+ * 
+ * @param translator - The base translation function (typically `state.t` or result of `translate()`)
+ * @param namespace - The namespace prefix to prepend to all keys
+ * @returns A new translator function that automatically prefixes keys
+ * 
+ * @example
+ * ```typescript
+ * // In a route or island
+ * const t = state.t;
+ * const tActions = createNamespacedTranslator(t, "common.actions");
+ * const tStates = createNamespacedTranslator(t, "common.states");
+ * 
+ * // Use without repeating the namespace
+ * <button>{tActions("save")}</button>     // → t("common.actions.save")
+ * <p>{tStates("loading")}</p>             // → t("common.states.loading")
+ * 
+ * // You can also nest namespaces
+ * const tIndicators = createNamespacedTranslator(t, "indicatorsPage");
+ * const tIndicatorForm = createNamespacedTranslator(tIndicators, "form");
+ * tIndicatorForm("save") // → t("indicatorsPage.form.save")
+ * ```
+ */
+export function createNamespacedTranslator(
+  translator: (key: string) => string,
+  namespace: string,
+): (key: string) => string {
+  return (key: string): string => {
+    // If the key is empty, just use the namespace itself
+    if (!key) {
+      return translator(namespace);
+    }
+    // Prepend the namespace to the key
+    return translator(`${namespace}.${key}`);
+  };
+}

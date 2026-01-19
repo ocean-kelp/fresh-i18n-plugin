@@ -278,6 +278,50 @@ export default function MyIsland({ translationData, translationConfig }: MyIslan
 
 - Routes use `state.t` directly
 - Islands receive `translationData` and `translationConfig` as props
+
+## Namespaced Translators
+
+Avoid repetitive namespace prefixes by creating scoped translators:
+
+```typescript
+import { createNamespacedTranslator } from "@xiayun/fresh-i18n";
+
+// In a route or island
+export default function MyComponent({ state }) {
+  const t = state.t;
+
+  // Create namespaced translators
+  const tActions = createNamespacedTranslator(t, "common.actions");
+  const tStates = createNamespacedTranslator(t, "common.states");
+  const tForm = createNamespacedTranslator(t, "indicatorsPage.form");
+
+  return (
+    <div>
+      <button>{tActions("save")}</button> {/* → t("common.actions.save") */}
+      <button>{tActions("cancel")}</button> {/* → t("common.actions.cancel") */}
+      <p>{tStates("loading")}</p> {/* → t("common.states.loading") */}
+      <input placeholder={tForm("name")} /> {/* → t("indicatorsPage.form.name") */}
+    </div>
+  );
+}
+```
+
+**Benefits:**
+
+- No repetitive namespace prefixes in your code
+- Better readability and maintainability
+- Type-safe (still returns `string`)
+- Can be nested for deeper namespaces
+
+**Nested namespacing:**
+
+```typescript
+const tIndicators = createNamespacedTranslator(t, "indicatorsPage");
+const tForm = createNamespacedTranslator(tIndicators, "form");
+
+tForm("save"); // → t("indicatorsPage.form.save")
+```
+
 - Island creates its own `t()` function using `translate()`
 - Never pass the `t()` function directly to islands
 

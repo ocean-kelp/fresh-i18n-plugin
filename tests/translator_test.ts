@@ -180,3 +180,76 @@ Deno.test("translate - custom indicator format", () => {
 
   assertEquals(t("common.title"), "Welcome · EN");
 });
+
+// ========== Namespaced Translator Tests ==========
+
+import { createNamespacedTranslator } from "../src/translator.ts";
+
+Deno.test("createNamespacedTranslator - basic usage", () => {
+  const translationData = {
+    "common.actions.save": "Save",
+    "common.actions.cancel": "Cancel",
+    "common.states.loading": "Loading...",
+  };
+
+  const t = translate(translationData);
+  const tActions = createNamespacedTranslator(t, "common.actions");
+  
+  assertEquals(tActions("save"), "Save");
+  assertEquals(tActions("cancel"), "Cancel");
+});
+
+Deno.test("createNamespacedTranslator - nested namespaces", () => {
+  const translationData = {
+    "indicatorsPage.form.save": "Save Indicator",
+    "indicatorsPage.form.cancel": "Cancel",
+  };
+
+  const t = translate(translationData);
+  const tIndicators = createNamespacedTranslator(t, "indicatorsPage");
+  const tForm = createNamespacedTranslator(tIndicators, "form");
+  
+  assertEquals(tForm("save"), "Save Indicator");
+  assertEquals(tForm("cancel"), "Cancel");
+});
+
+Deno.test("createNamespacedTranslator - multiple namespaced translators", () => {
+  const translationData = {
+    "common.actions.edit": "Edit",
+    "common.actions.delete": "Delete",
+    "common.states.loading": "Loading...",
+    "common.states.success": "Success!",
+  };
+
+  const t = translate(translationData);
+  const tActions = createNamespacedTranslator(t, "common.actions");
+  const tStates = createNamespacedTranslator(t, "common.states");
+  
+  assertEquals(tActions("edit"), "Edit");
+  assertEquals(tActions("delete"), "Delete");
+  assertEquals(tStates("loading"), "Loading...");
+  assertEquals(tStates("success"), "Success!");
+});
+
+Deno.test("createNamespacedTranslator - missing key shows full path in dev", () => {
+  const translationData = {
+    "common.actions.save": "Save",
+  };
+
+  const t = translate(translationData, { isProduction: () => false });
+  const tActions = createNamespacedTranslator(t, "common.actions");
+  
+  // Should show full namespaced key when missing
+  assertEquals(tActions("nonexistent"), "[common.actions.nonexistent]");
+});
+
+Deno.test("createNamespacedTranslator - empty key uses namespace itself", () => {
+  const translationData = {
+    "common.actions": "Actions Menu",
+  };
+
+  const t = translate(translationData);
+  const tActions = createNamespacedTranslator(t, "common.actions");
+  
+  assertEquals(tActions(""), "Actions Menu");
+});

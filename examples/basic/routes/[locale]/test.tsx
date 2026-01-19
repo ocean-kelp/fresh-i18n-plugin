@@ -1,8 +1,15 @@
 /** @jsxImportSource preact */
 import { define } from "../../utils.ts";
+import { createNamespacedTranslator } from "@xiayun/fresh-i18n";
 
 export default define.page(function TestPage({ state }) {
   const t = state.t;
+  
+  // Create namespaced translators to avoid repetition
+  const tActions = createNamespacedTranslator(t, "common.actions");
+  const tStates = createNamespacedTranslator(t, "common.states");
+  const tDashboard = createNamespacedTranslator(t, "features.dashboard");
+  const tCommon = createNamespacedTranslator(t, "common");
 
   return (
     <html>
@@ -24,44 +31,44 @@ export default define.page(function TestPage({ state }) {
         
         <div class="test-section">
           <h2>🗂️ Nested Common Actions</h2>
-          <p>Key: <code class="test-key">common.actions.save</code></p>
-          <p>Result: <span class="test-result">{t("common.actions.save")}</span></p>
+          <p>Using namespaced translator: <code class="test-key">tActions("save")</code></p>
+          <p>Result: <span class="test-result">{tActions("save")}</span></p>
           
-          <p>Key: <code class="test-key">common.actions.cancel</code></p>
-          <p>Result: <span class="test-result">{t("common.actions.cancel")}</span></p>
+          <p>Key: <code class="test-key">tActions("cancel")</code></p>
+          <p>Result: <span class="test-result">{tActions("cancel")}</span></p>
           
-          <p>Key: <code class="test-key">common.actions.edit</code></p>
-          <p>Result: <span class="test-result">{t("common.actions.edit")}</span></p>
+          <p>Key: <code class="test-key">tActions("edit")</code></p>
+          <p>Result: <span class="test-result">{tActions("edit")}</span></p>
         </div>
 
         <div class="test-section">
           <h2>📊 Nested Common States</h2>
-          <p>Key: <code class="test-key">common.states.loading</code></p>
-          <p>Result: <span class="test-result">{t("common.states.loading")}</span></p>
+          <p>Key: <code class="test-key">tStates("loading")</code></p>
+          <p>Result: <span class="test-result">{tStates("loading")}</span></p>
           
-          <p>Key: <code class="test-key">common.states.success</code></p>
-          <p>Result: <span class="test-result">{t("common.states.success")}</span></p>
+          <p>Key: <code class="test-key">tStates("success")</code></p>
+          <p>Result: <span class="test-result">{tStates("success")}</span></p>
         </div>
 
         <div class="test-section">
           <h2>🎯 Features Namespace</h2>
-          <p>Key: <code class="test-key">features.dashboard.title</code></p>
-          <p>Result: <span class="test-result">{t("features.dashboard.title")}</span></p>
+          <p>Key: <code class="test-key">tDashboard("title")</code></p>
+          <p>Result: <span class="test-result">{tDashboard("title")}</span></p>
           
-          <p>Key: <code class="test-key">features.dashboard.welcomeMessage</code></p>
-          <p>Result: <span class="test-result">{t("features.dashboard.welcomeMessage")}</span></p>
+          <p>Key: <code class="test-key">tDashboard("welcomeMessage")</code></p>
+          <p>Result: <span class="test-result">{tDashboard("welcomeMessage")}</span></p>
           
-          <p>Key: <code class="test-key">features.dashboard.stats.users</code></p>
-          <p>Result: <span class="test-result">{t("features.dashboard.stats.users")}</span></p>
+          <p>Key: <code class="test-key">tDashboard("stats.users")</code></p>
+          <p>Result: <span class="test-result">{tDashboard("stats.users")}</span></p>
         </div>
 
         <div class="test-section">
           <h2>📝 Old Common.json (backwards compatibility)</h2>
-          <p>Key: <code class="test-key">common.welcome</code></p>
-          <p>Result: <span class="test-result">{t("common.welcome")}</span></p>
+          <p>Key: <code class="test-key">tCommon("welcome")</code></p>
+          <p>Result: <span class="test-result">{tCommon("welcome")}</span></p>
           
-          <p>Key: <code class="test-key">common.hello</code></p>
-          <p>Result: <span class="test-result">{t("common.hello")}</span></p>
+          <p>Key: <code class="test-key">tCommon("hello")</code></p>
+          <p>Result: <span class="test-result">{tCommon("hello")}</span></p>
         </div>
 
         <div class="test-section">
