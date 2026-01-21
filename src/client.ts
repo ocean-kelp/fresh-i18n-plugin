@@ -19,10 +19,13 @@ interface I18nGlobalData {
 }
 
 /**
- * Extend globalThis with i18n data property.
+ * Internal helper to access global i18n data with type safety.
  */
-declare global {
-  var __I18N__: I18nGlobalData | undefined;
+function getGlobalData(): I18nGlobalData | undefined {
+  if (typeof globalThis === "undefined") {
+    return undefined;
+  }
+  return (globalThis as unknown as { __I18N__?: I18nGlobalData }).__I18N__;
 }
 
 /**
@@ -57,7 +60,7 @@ export function useTranslation(): (key: string) => string {
     );
   }
 
-  const data = globalThis.__I18N__;
+  const data = getGlobalData();
 
   if (!data) {
     throw new Error(
@@ -99,7 +102,7 @@ export function useLocale(): string {
     );
   }
 
-  const data = globalThis.__I18N__;
+  const data = getGlobalData();
 
   if (!data) {
     throw new Error(
@@ -128,9 +131,5 @@ export function useLocale(): string {
  * ```
  */
 export function getTranslationData(): I18nGlobalData | undefined {
-  if (typeof globalThis === "undefined") {
-    return undefined;
-  }
-
-  return globalThis.__I18N__;
+  return getGlobalData();
 }
