@@ -234,7 +234,11 @@ function matchRoutePattern(urlPath: string, pattern: string): boolean {
     if (!urlPath.startsWith(prefix)) return false;
     
     // Greedy match - everything after prefix matches
-    return true;
+    // Also matches the base path if it ends with / (e.g. /derived/ matches /derived/*)
+    // Or if urlPath is exactly one char shorter than prefix (removing the trailing slash)
+    if (urlPath.length >= prefix.length - 1) return true;
+    
+    return false;
   }
 
   // No wildcard, exact match only
@@ -597,7 +601,7 @@ export const i18nPlugin = <State extends TranslationState = TranslationState>(
         
         // Determine which namespaces to load
         const namespacesToLoad = getClientLoadNamespaces(
-          url.pathname,
+          ctx.state.path,
           clientLoad,
           isDev,
         );
