@@ -16,7 +16,18 @@ export interface I18nContextData {
 /**
  * Global storage for i18n context during server-side rendering.
  */
-export const i18nContext = new AsyncLocalStorage<I18nContextData>();
+// Use a global symbol to ensure we share the same storage instance
+// even if the module is loaded multiple times (e.g. from different locations)
+const GLOBAL_CONTEXT_KEY = Symbol.for("fresh-i18n-context");
+
+const globalStore = (globalThis as any)[GLOBAL_CONTEXT_KEY] || new AsyncLocalStorage<I18nContextData>();
+
+// Ensure it's registered globally
+if (!(globalThis as any)[GLOBAL_CONTEXT_KEY]) {
+  (globalThis as any)[GLOBAL_CONTEXT_KEY] = globalStore;
+}
+
+export const i18nContext = globalStore as AsyncLocalStorage<I18nContextData>;
 
 /**
  * Helper to get i18n data from the current async context.
