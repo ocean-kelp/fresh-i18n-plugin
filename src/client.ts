@@ -7,11 +7,7 @@
  * @module
  */
 
-import {
-  createNamespacedTranslator,
-  translate,
-  type TranslationConfig,
-} from "./translator.ts";
+import { translate, type TranslationConfig } from "./translator.ts";
 
 /**
  * Interface for i18n data injected into global scope.
@@ -23,44 +19,10 @@ interface I18nGlobalData {
 }
 
 /**
- * Extended global interface with i18n storage properties
+ * Extend globalThis with i18n data property.
  */
-interface GlobalWithI18n {
-  __I18N__?: I18nGlobalData;
-  [key: symbol]: unknown;
-}
-
-/**
- * Internal helper to access global i18n data with type safety.
- * Checks both server-side AsyncLocalStorage (via global symbol) and client-side window.__I18N__
- */
-function getGlobalData(): I18nGlobalData | undefined {
-  // 1. Try server-side context (AsyncLocalStorage) via global symbol
-  //    This avoids importing node:async_hooks on the client
-  const GLOBAL_CONTEXT_KEY = Symbol.for("fresh-i18n-context");
-  const globalWithI18n = globalThis as unknown as GlobalWithI18n;
-  const contextStorage = globalWithI18n[GLOBAL_CONTEXT_KEY];
-  
-  if (contextStorage && typeof contextStorage === "object" && "getStore" in contextStorage) {
-    try {
-      const getStore = (contextStorage as { getStore: () => I18nGlobalData | undefined }).getStore;
-      if (typeof getStore === "function") {
-        const contextData = getStore.call(contextStorage);
-        if (contextData) {
-          return contextData;
-        }
-      }
-    } catch {
-      // AsyncLocalStorage not active or not properly initialized
-      // Fall through to check window.__I18N__
-    }
-  }
-
-  // 2. Fallback to client-side global (window.__I18N__)
-  if (typeof globalThis === "undefined") {
-    return undefined;
-  }
-  return globalWithI18n.__I18N__;
+declare global {
+  var __I18N__: I18nGlobalData | undefined;
 }
 
 /**
@@ -95,7 +57,7 @@ export function useTranslation(): (key: string) => string {
     );
   }
 
-  const data = getGlobalData();
+  const data = globalThis.__I18N__;
 
   if (!data) {
     throw new Error(
@@ -137,7 +99,7 @@ export function useLocale(): string {
     );
   }
 
-  const data = getGlobalData();
+  const data = globalThis.__I18N__;
 
   if (!data) {
     throw new Error(
@@ -166,7 +128,9 @@ export function useLocale(): string {
  * ```
  */
 export function getTranslationData(): I18nGlobalData | undefined {
-  return getGlobalData();
-}
+  if (typeof globalThis === "undefined") {
+    return undefined;
+  }
 
-export { createNamespacedTranslator, translate };
+  return globalThis.__I18N__;
+}
