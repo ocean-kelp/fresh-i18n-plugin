@@ -7,7 +7,9 @@
  * @module
  */
 
-import { translate, type TranslationConfig } from "./translator.ts";
+import { translate, createNamespacedTranslator, type TranslationConfig } from "./translator.ts";
+
+export { createNamespacedTranslator };
 
 /**
  * Interface for i18n data injected into global scope.
