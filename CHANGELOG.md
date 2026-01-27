@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.7] - 2026-01-27
+
+### Fixed
+
+- **Module export structure** - Main module now re-exports from `client.ts` instead of `translator.ts`
+  - Prevents Vite from bundling server-side `context.ts` when islands import from main module
+  - Allows islands to import `translate` from `@xiayun/fresh-i18n` without causing bundling errors
+  - Definitive fix for "Cannot bundle built-in module node:async_hooks" error
+
 ## [0.2.6] - 2026-01-27
 
 ### Fixed

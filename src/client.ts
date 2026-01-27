@@ -169,4 +169,4 @@ export function getTranslationData(): I18nGlobalData | undefined {
   return getGlobalData();
 }
 
-export { createNamespacedTranslator };
+export { createNamespacedTranslator, translate };
