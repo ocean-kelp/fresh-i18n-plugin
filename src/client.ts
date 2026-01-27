@@ -12,7 +12,6 @@ import {
   translate,
   type TranslationConfig,
 } from "./translator.ts";
-import { getI18nContext } from "./context.ts";
 
 /**
  * Interface for i18n data injected into global scope.
@@ -25,12 +24,19 @@ interface I18nGlobalData {
 
 /**
  * Internal helper to access global i18n data with type safety.
+ * Checks both server-side AsyncLocalStorage (via global symbol) and client-side window.__I18N__
  */
 function getGlobalData(): I18nGlobalData | undefined {
-  // 1. Try server-side context (AsyncLocalStorage)
-  const contextData = getI18nContext();
-  if (contextData) {
-    return contextData;
+  // 1. Try server-side context (AsyncLocalStorage) via global symbol
+  //    This avoids importing node:async_hooks on the client
+  const GLOBAL_CONTEXT_KEY = Symbol.for("fresh-i18n-context");
+  const contextStorage = (globalThis as any)[GLOBAL_CONTEXT_KEY];
+  
+  if (contextStorage && typeof contextStorage.getStore === "function") {
+    const contextData = contextStorage.getStore();
+    if (contextData) {
+      return contextData;
+    }
   }
 
   // 2. Fallback to client-side global (window.__I18N__)
